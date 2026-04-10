@@ -112,3 +112,34 @@ def plot_corr_heatmap(df: pd.DataFrame, include_categorical: list[str] = None) -
     sns.heatmap(df_corr[cols_to_plot].corr(), annot=True, cmap="coolwarm", fmt=".2f", square=True)
     plt.title("Heatmap de Correlaciones (Numéricas + Categóricas Codificadas)")
     plt.show()
+
+
+def plot_model_results(y_test, y_pred, model_name: str = "Modelo") -> None:
+    """
+    Grafica Predicho vs Real.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=y_test, y=y_pred, alpha=0.3)
+    
+    # Línea de referencia (perfecta predicción)
+    line_coords = [y_test.min(), y_test.max()]
+    plt.plot(line_coords, line_coords, color='red', linestyle='--')
+    
+    plt.title(f"Resultados de Predicción: {model_name}")
+    plt.xlabel("Valores Reales (Price)")
+    plt.ylabel("Valores Predichos (Price)")
+    plt.show()
+
+
+def plot_feature_importance(model, feature_names: list[str], top_n: int = 20) -> None:
+    """
+    Grafica la importancia de las variables para un modelo basado en árboles.
+    """
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1][:top_n]
+    
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=importances[indices], y=[feature_names[i] for i in indices])
+    plt.title(f"Top {top_n} Variables más Importantes")
+    plt.xlabel("Importancia Relativa")
+    plt.show()
