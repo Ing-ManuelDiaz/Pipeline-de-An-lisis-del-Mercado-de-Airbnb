@@ -20,7 +20,10 @@ SAVE_DIR = Path(__file__).resolve().parents[1] / "reports" / "figures"
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 def save_fig(fig_id: str, tight_layout: bool = True, fig_extension: str = "png", resolution: int = 300) -> None:
-    """Guarda la figura actual en reports/figures/."""
+    """
+    Guarda la figura actual en reports/figures/.
+    NOTA: Debe llamarse ANTES de plt.show() para evitar archivos en blanco.
+    """
     path = SAVE_DIR / f"{fig_id}.{fig_extension}"
     if tight_layout:
         plt.tight_layout()
@@ -35,7 +38,6 @@ def plot_price_distribution(df: pd.DataFrame, col: str = "price") -> None:
     plt.title("Distribución de Precios de Listados")
     plt.xlabel("Precio")
     plt.ylabel("Frecuencia")
-    plt.show()
 
 
 def plot_room_type_counts(df: pd.DataFrame, col: str = "room_type") -> None:
@@ -44,7 +46,6 @@ def plot_room_type_counts(df: pd.DataFrame, col: str = "room_type") -> None:
     sns.countplot(data=df, x=col, order=df[col].value_counts().index)
     plt.title("Conteo por Tipo de Habitación")
     plt.xticks(rotation=45)
-    plt.show()
 
 
 def plot_price_boxplot(df: pd.DataFrame, group_col: str = "neighbourhood", price_col: str = "price", top_n: int = 10, use_p95: bool = True) -> None:
@@ -61,14 +62,13 @@ def plot_price_boxplot(df: pd.DataFrame, group_col: str = "neighbourhood", price
     if use_p95:
         p95 = df[price_col].quantile(0.95)
         plt.ylim(0, p95)
-        plt.title(f"Distribución de Precios en Top {top_n} Barrios (Limitado al P95: ${p95:,.0f})")
+        plt.title(f"Distribución de Precios en Top {top_n} {group_col.capitalize()} (Limitado al P95: ${p95:,.0f})")
     else:
-        plt.title(f"Distribución de Precios en Top {top_n} Barrios")
+        plt.title(f"Distribución de Precios en Top {top_n} {group_col.capitalize()}")
         
     plt.xticks(rotation=45)
-    plt.xlabel("Barrio")
+    plt.xlabel(group_col.capitalize())
     plt.ylabel("Precio")
-    plt.show()
 
 
 def plot_scatter_reviews_price(df: pd.DataFrame) -> None:
@@ -78,7 +78,6 @@ def plot_scatter_reviews_price(df: pd.DataFrame) -> None:
     plt.title("Relación: Número de Reseñas vs Precio")
     plt.xlabel("Número de Reseñas")
     plt.ylabel("Precio")
-    plt.show()
 
 
 def plot_scatter_nights_price(df: pd.DataFrame) -> None:
@@ -88,7 +87,6 @@ def plot_scatter_nights_price(df: pd.DataFrame) -> None:
     plt.title("Relación: Mínimo de Noches vs Precio")
     plt.xlabel("Mínimo de Noches")
     plt.ylabel("Precio")
-    plt.show()
 
 
 def plot_corr_heatmap(df: pd.DataFrame, include_categorical: list[str] = None) -> None:
@@ -111,4 +109,32 @@ def plot_corr_heatmap(df: pd.DataFrame, include_categorical: list[str] = None) -
     
     sns.heatmap(df_corr[cols_to_plot].corr(), annot=True, cmap="coolwarm", fmt=".2f", square=True)
     plt.title("Heatmap de Correlaciones (Numéricas + Categóricas Codificadas)")
-    plt.show()
+
+
+def plot_model_results(y_test, y_pred, model_name: str = "Modelo") -> None:
+    """
+    Grafica Predicho vs Real.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=y_test, y=y_pred, alpha=0.3)
+    
+    # Línea de referencia (perfecta predicción)
+    line_coords = [y_test.min(), y_test.max()]
+    plt.plot(line_coords, line_coords, color='red', linestyle='--')
+    
+    plt.title(f"Resultados de Predicción: {model_name}")
+    plt.xlabel("Valores Reales (Price)")
+    plt.ylabel("Valores Predichos (Price)")
+
+
+def plot_feature_importance(model, feature_names: list[str], top_n: int = 20) -> None:
+    """
+    Grafica la importancia de las variables para un modelo basado en árboles.
+    """
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1][:top_n]
+    
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=importances[indices], y=[feature_names[i] for i in indices])
+    plt.title(f"Top {top_n} Variables más Importantes")
+    plt.xlabel("Importancia Relativa")
