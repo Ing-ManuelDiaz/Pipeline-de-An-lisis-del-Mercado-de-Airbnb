@@ -1,27 +1,17 @@
-# Dependencias del proyecto Airbnb Analysis
-# Instalar con: pip install -r requirements.txt
-
-# Manipulación de datos
-pandas==2.2.2
+# Análisis de datos
+pandas==2.1.4
 numpy==1.26.4
 
 # Visualización
-matplotlib==3.9.0
+matplotlib==3.8.2
 seaborn==0.13.2
-plotly==5.22.0
+plotly==5.18.0
 
 # Machine Learning
-scikit-learn==1.5.0
+scikit-learn==1.4.0
 
-# Notebooks
-jupyter==1.0.0
-ipykernel==6.29.4
+# Jupyter
+jupyterlab==4.0.11
 
 # Utilidades
-python-dotenv==1.0.1
-requests==2.32.2
-tqdm==4.66.4
-
-# Geo (opcional, para análisis espacial)
-# geopandas==0.14.4
-# folium==0.16.0
+python-dotenv==1.0.0
