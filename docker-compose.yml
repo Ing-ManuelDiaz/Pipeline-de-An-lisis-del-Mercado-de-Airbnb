@@ -1,31 +1,14 @@
-version: "3.9"
+version: '3.8'
 
 services:
   jupyter:
-    image: jupyter/scipy-notebook:latest
-    container_name: airbnb_jupyter
+    build: . # construye desde tu Dockerfile
     ports:
-      - "8888:8888"
+      - "8888:8888" # expone Jupyter en tu navegador
     volumes:
-      - .:/home/jovyan/work
-    environment:
-      - JUPYTER_ENABLE_LAB=yes
+      - ./notebooks:/app/notebooks # tu trabajo persiste
+      - ./data:/app/data # tus datos persisten
+      - ./src:/app/src # tu código persiste
     env_file:
-      - .env
-    command: start-notebook.sh --NotebookApp.token=''
-
-  # Opcional: base de datos para almacenar datos procesados
-  # postgres:
-  #   image: postgres:15
-  #   container_name: airbnb_db
-  #   environment:
-  #     POSTGRES_USER: airbnb
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: airbnb_analysis
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-
-# volumes:
-#   pgdata:
+      - .env # carga tus variables secretas
+    working_dir: /app
